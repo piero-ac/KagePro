@@ -1,0 +1,12 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+.env
+
+# PyCharm
+.idea/
+
+# Node
+node_modules/
+.expo/
