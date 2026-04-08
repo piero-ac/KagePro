@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routes import immersion
+from routes import sessions
 
 
 app = FastAPI()
@@ -12,7 +12,7 @@ app.add_middleware(CORSMiddleware,
                    allow_headers=["*"]
                 )
 
-app.include_router(immersion.router)
+app.include_router(sessions.router)
 @app.get("/")
 async def root():
     return {"message": "Hello World"}
