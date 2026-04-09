@@ -1,12 +1,20 @@
 from datetime import datetime
 from uuid import UUID
 from pydantic import BaseModel, Field
+from enum import Enum
+
+class ActivityType(str, Enum):
+    shadowing = "shadowing"
+    reading = "reading"
+    writing = "writing"
+    listening = "listening"
+    online_tutoring = "online_tutoring"
 
 class SessionCreate(BaseModel):
     language: str = Field(min_length=2, max_length=20)
     date: datetime
     duration: int
-    activity_type: str
+    activity_type: ActivityType
 
 class SessionResponse(BaseModel):
     session_id: UUID
