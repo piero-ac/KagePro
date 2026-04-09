@@ -5,7 +5,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 from database.models import SessionModel, SessionDetailsModel
 from database.db import get_db
-from models.session import SessionCreate
+from models.session import SessionCreate, SessionDetailsCreate
 
 # from ..utils import auth
 #   user_details = auth.authenticate_and_get_user_details(request)
@@ -52,3 +52,24 @@ async def create_session(db:db_dependency, session_request: SessionCreate):
     db.commit()
     db.refresh(session_model)
     return {"session_id": session_model.session_id}
+
+@router.post("/{session_id}/details", status_code=status.HTTP_201_CREATED)
+async def create_session_details(db:db_dependency, session_id: UUID, session_details_request: SessionDetailsCreate):
+    # TODO: check for valid user
+
+    session = db.execute(
+        select(SessionModel)
+        .where(SessionModel.session_id == session_id)
+        .filter(SessionModel.user_id == "user_test_123")
+    ).scalars().first()
+
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+
+    session_details_model = SessionDetailsModel(**session_details_request.model_dump())
+    session_details_model.session_id = session_id
+    db.add(session_details_model)
+    db.commit()
+    db.refresh(session_details_model)
+    return {"session_details_id": session_details_model.session_details_id}
+
