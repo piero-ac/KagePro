@@ -1,10 +1,11 @@
 from uuid import UUID
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from typing import Annotated
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 from database.models import SessionModel, SessionDetailsModel
 from database.db import get_db
+from models.session import SessionCreate
 
 # from ..utils import auth
 #   user_details = auth.authenticate_and_get_user_details(request)
@@ -41,3 +42,13 @@ async def get_session_details(db:db_dependency, session_id: UUID):
     )
     session_details = result.scalars().first()
     return session_details
+
+@router.post("/", status_code=status.HTTP_201_CREATED)
+async def create_session(db:db_dependency, session_request: SessionCreate):
+    # TODO: check for valid user
+
+    session_model = SessionModel(**session_request.model_dump(), user_id="user_test_123") # change with clerk user id
+    db.add(session_model)
+    db.commit()
+    db.refresh(session_model)
+    return {"session_id": session_model.session_id}
