@@ -1,3 +1,7 @@
+DROP TABLE IF EXISTS session_details;
+DROP TABLE IF EXISTS session;
+DROP TABLE IF EXISTS catalog;
+
 CREATE TABLE catalog (
     audio_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     title VARCHAR(100) NOT NULL,
