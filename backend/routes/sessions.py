@@ -35,12 +35,20 @@ async def get_session(db:db_dependency, session_id: UUID):
 
 @router.get("/{session_id}/details")
 async def get_session_details(db:db_dependency, session_id: UUID):
-    # TODO: check for valid user
-    result = db.execute(
+    session = db.execute(
+        select(SessionModel)
+        .where(SessionModel.session_id == session_id)
+        .filter(SessionModel.user_id == "user_test_123")
+    ).scalars().first()
+
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+
+    session_details = db.execute(
         select(SessionDetailsModel)
         .where(SessionDetailsModel.session_id == session_id)
-    )
-    session_details = result.scalars().first()
+    ).scalars().first()
+
     return session_details
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
@@ -73,3 +81,27 @@ async def create_session_details(db:db_dependency, session_id: UUID, session_det
     db.refresh(session_details_model)
     return {"session_details_id": session_details_model.session_details_id}
 
+@router.put("/{session_id}/details", status_code=status.HTTP_204_NO_CONTENT)
+async def update_session_details(db:db_dependency, session_id: UUID, session_details_request: SessionDetailsCreate):
+    # TODO: check for valid user
+
+    session = db.execute(
+        select(SessionModel)
+        .where(SessionModel.session_id == session_id)
+        .filter(SessionModel.user_id == "user_test_123")
+    ).scalars().first()
+
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+
+    session_details_model = db.execute(
+        select(SessionDetailsModel)
+        .where(SessionDetailsModel.session_id == session_id)
+    ).scalars().first()
+
+    if not session_details_model:
+        raise HTTPException(status_code=404, detail="Session Details not found")
+
+    session_details_model.title = session_details_request.title
+    session_details_model.description = session_details_request.description
+    db.commit()
