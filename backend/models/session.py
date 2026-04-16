@@ -28,7 +28,7 @@ class SessionResponse(BaseModel):
         from_attributes = True
 
 class SessionDetailsCreate(BaseModel):
-    audio_id: str | None = None
+    audio_id: UUID | None = None
     user_audio_id: str | None = None
     title: str | None = None
     description: str | None = None
@@ -42,7 +42,7 @@ class SessionDetailsCreate(BaseModel):
 class SessionDetailsResponse(BaseModel):
     session_details_id: UUID
     session_id: UUID
-    audio_id: str | None
+    audio_id: UUID | None
     user_audio_id: str | None
     title: str | None
     description: str | None
