@@ -105,3 +105,19 @@ async def update_session_details(db:db_dependency, session_id: UUID, session_det
     session_details_model.title = session_details_request.title
     session_details_model.description = session_details_request.description
     db.commit()
+
+@router.delete("/{session_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_session(db:db_dependency, session_id: UUID):
+    # TODO: check for valid user
+
+    session = db.execute(
+        select(SessionModel)
+        .where(SessionModel.session_id == session_id)
+        .filter(SessionModel.user_id == "user_test_123")
+    ).scalars().first()
+
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+
+    db.delete(session)
+    db.commit()
